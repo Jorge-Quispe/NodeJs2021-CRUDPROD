@@ -1,4 +1,5 @@
 import { pool } from '../database'
+const helpers = require('../libs/helpers');
 
 
 export const readAllUsers = async(req, res)=>{
@@ -46,7 +47,8 @@ export const updateUser = async(req, res)=>{
 export const createUser = async(req, res)=>{
     try {
         const{ username, password} = req.body;
-        await pool.query('insert into usuario(username, password, estado) values($1,$2, 1)', [username, password]);
+        const password2 = await helpers.encryptPassword(password);
+        await pool.query('insert into usuario(username, password) values($1,$2)', [username, password2]);
         return res.status(200).json(
             `Usuario ${ username } creado correctamente...!`);
     } catch (e) {
